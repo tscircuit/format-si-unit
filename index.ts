@@ -19,8 +19,9 @@ export function formatSiUnit(value?: number | null): string {
     SI_PREFIXES[SI_PREFIXES.length - 1]
   const scaled = value / prefix.value
 
-  // Format number to at most 3 significant digits
-  const formatted = scaled.toPrecision(3).replace(/\.0+$/, "")
+  // Format number to at most 3 significant digits and remove trailing zeros
+  const formatted = scaled.toPrecision(3)
+    .replace(/\.?0+$/, "") // Remove trailing zeros and decimal point if all zeros
 
   return `${formatted}${prefix.symbol}`
 }
