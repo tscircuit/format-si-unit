@@ -14,14 +14,24 @@ export function formatSiUnit(value?: number | null): string {
   if (value == null) return ""
   if (value === 0) return "0"
 
-  const prefix =
-    SI_PREFIXES.find((p) => Math.abs(value) >= p.value) ||
-    SI_PREFIXES[SI_PREFIXES.length - 1]
+  const absValue = Math.abs(value)
+  
+  const prefix = SI_PREFIXES.find((p) => {
+    const scaled = absValue / p.value
+    return scaled >= 1 && scaled < 1000
+  }) || SI_PREFIXES[SI_PREFIXES.length - 1]
+
   const scaled = value / prefix.value
 
-  // Format number to at most 3 significant digits and remove trailing zeros
-  const formatted = scaled.toPrecision(3)
-    .replace(/\.?0+$/, "") // Remove trailing zeros and decimal point if all zeros
+  let formatted = scaled.toPrecision(3)
+  
+  // Only remove trailing zeros if there's a non-zero digit after the decimal
+  if (formatted.includes('.') && !/\.0+$/.test(formatted)) {
+    formatted = formatted.replace(/0+$/, '')
+  }
+  
+  // Remove any pure ".0" or ".00" suffixes
+  formatted = formatted.replace(/\.0+$/, '')
 
   return `${formatted}${prefix.symbol}`
 }
