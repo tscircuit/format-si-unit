@@ -10,12 +10,6 @@ const SI_PREFIXES = [
   { value: 1e-12, symbol: "p" },
 ]
 
-const SI_PREFIX_VALUES = new Map(
-  SI_PREFIXES.map((prefix) => [prefix.symbol, prefix.value]),
-)
-
-SI_PREFIX_VALUES.set("u", 1e-6)
-
 export function formatSiUnit(value?: number | null): string {
   if (value == null) return ""
   if (value === 0) return "0"
@@ -43,21 +37,4 @@ export function formatSiUnit(value?: number | null): string {
   return `${formatted}${prefix.symbol}`
 }
 
-export function parseSiUnit(value?: string | null): number | undefined {
-  if (value == null) return undefined
-
-  const trimmed = value.trim()
-  if (trimmed === "") return undefined
-
-  const match = trimmed.match(
-    /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)([TGMkmµunp]?)$/,
-  )
-  if (!match) return Number.NaN
-
-  const numericValue = Number(match[1])
-  const prefixValue = SI_PREFIX_VALUES.get(match[2])
-
-  if (prefixValue == null) return Number.NaN
-
-  return numericValue * prefixValue
-}
+export { parseSiUnit } from "./parse-si-unit"
