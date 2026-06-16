@@ -15,23 +15,26 @@ export function formatSiUnit(value?: number | null): string {
   if (value === 0) return "0"
 
   const absValue = Math.abs(value)
-  
-  const prefix = SI_PREFIXES.find((p) => {
-    const scaled = absValue / p.value
-    return scaled >= 1 && scaled < 1000
-  }) || SI_PREFIXES[SI_PREFIXES.length - 1]
+
+  const prefix =
+    SI_PREFIXES.find((p) => {
+      const scaled = absValue / p.value
+      return scaled >= 1 && scaled < 1000
+    }) || SI_PREFIXES[SI_PREFIXES.length - 1]
 
   const scaled = value / prefix.value
 
   let formatted = scaled.toPrecision(3)
-  
+
   // Only remove trailing zeros if there's a non-zero digit after the decimal
-  if (formatted.includes('.') && !/\.0+$/.test(formatted)) {
-    formatted = formatted.replace(/0+$/, '')
+  if (formatted.includes(".") && !/\.0+$/.test(formatted)) {
+    formatted = formatted.replace(/0+$/, "")
   }
-  
+
   // Remove any pure ".0" or ".00" suffixes
-  formatted = formatted.replace(/\.0+$/, '')
+  formatted = formatted.replace(/\.0+$/, "")
 
   return `${formatted}${prefix.symbol}`
 }
+
+export { parseSiUnit } from "./parse-si-unit"
