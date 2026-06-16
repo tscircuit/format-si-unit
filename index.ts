@@ -37,4 +37,5 @@ export function formatSiUnit(value?: number | null): string {
   return `${formatted}${prefix.symbol}`
 }
 
+export { parseSiPrefix } from "./parse-si-prefix"
 export { parseSiUnit } from "./parse-si-unit"

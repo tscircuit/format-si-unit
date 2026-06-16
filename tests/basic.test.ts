@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { formatSiUnit, parseSiUnit } from "../index";
+import { formatSiUnit, parseSiPrefix, parseSiUnit } from "../index";
 
 describe("formatSiUnit", () => {
   test("handles basic cases", () => {
@@ -30,6 +30,7 @@ describe("formatSiUnit", () => {
 describe("parseSiUnit", () => {
   test("handles basic cases", () => {
     expect(parseSiUnit("1k")).toBe(1000);
+    expect(parseSiUnit("1K")).toBe(1000);
     expect(parseSiUnit("1.5k")).toBe(1500);
     expect(parseSiUnit("1M")).toBe(1_000_000);
   });
@@ -40,6 +41,7 @@ describe("parseSiUnit", () => {
     expect(parseSiUnit("1u")).toBe(0.000001);
     expect(parseSiUnit("100µ")).toBeCloseTo(0.0001);
     expect(parseSiUnit("1n")).toBe(0.000000001);
+    expect(parseSiUnit("1f")).toBe(0.000000000000001);
   });
 
   test("handles signed and decimal inputs", () => {
@@ -60,5 +62,35 @@ describe("parseSiUnit", () => {
     expect(parseSiUnit("abc")).toBeNaN();
     expect(parseSiUnit("1kk")).toBeNaN();
     expect(parseSiUnit("1 k")).toBeNaN();
+    expect(parseSiUnit("10mA")).toBeNaN();
+  });
+});
+
+describe("parseSiPrefix", () => {
+  test("handles common SI prefixes", () => {
+    expect(parseSiPrefix("f")).toBe(1e-15);
+    expect(parseSiPrefix("p")).toBe(1e-12);
+    expect(parseSiPrefix("n")).toBe(1e-9);
+    expect(parseSiPrefix("u")).toBe(1e-6);
+    expect(parseSiPrefix("µ")).toBe(1e-6);
+    expect(parseSiPrefix("m")).toBe(1e-3);
+    expect(parseSiPrefix("k")).toBe(1e3);
+    expect(parseSiPrefix("K")).toBe(1e3);
+    expect(parseSiPrefix("M")).toBe(1e6);
+    expect(parseSiPrefix("G")).toBe(1e9);
+    expect(parseSiPrefix("T")).toBe(1e12);
+  });
+
+  test("keeps prefixes case-sensitive", () => {
+    expect(parseSiPrefix("m")).toBe(1e-3);
+    expect(parseSiPrefix("M")).toBe(1e6);
+  });
+
+  test("returns undefined for unknown prefixes", () => {
+    expect(parseSiPrefix("")).toBe(1);
+    expect(parseSiPrefix("x")).toBeUndefined();
+    expect(parseSiPrefix("MM")).toBeUndefined();
+    expect(parseSiPrefix("meg")).toBeUndefined();
+    expect(parseSiPrefix("milli")).toBeUndefined();
   });
 });
