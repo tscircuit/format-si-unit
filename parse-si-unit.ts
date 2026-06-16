@@ -1,4 +1,4 @@
-import { parseSiPrefix, SI_PREFIXES } from "./parse-si-prefix"
+import { getSiPrefixMultiplier, SI_PREFIXES } from "./get-si-prefix-multiplier"
 
 const SI_PREFIX_PATTERN = SI_PREFIXES
   .filter((prefix) => prefix !== "")
@@ -20,7 +20,7 @@ export function parseSiUnit(value?: string | null): number | undefined {
   if (!match) return Number.NaN
 
   const numericValue = Number(match[1])
-  const prefixValue = parseSiPrefix(match[2] ?? "")
+  const prefixValue = getSiPrefixMultiplier(match[2] ?? "")
 
   if (prefixValue == null) return Number.NaN
 

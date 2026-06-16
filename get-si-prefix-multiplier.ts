@@ -15,6 +15,6 @@ const SI_PREFIX_VALUES = new Map<string, number>([
 
 export const SI_PREFIXES = [...SI_PREFIX_VALUES.keys()]
 
-export function parseSiPrefix(prefix: string): number | undefined {
+export function getSiPrefixMultiplier(prefix: string): number | undefined {
   return SI_PREFIX_VALUES.get(prefix)
 }
