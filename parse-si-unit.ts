@@ -1,15 +1,14 @@
-const SI_PREFIX_VALUES = new Map<string, number>([
-  ["T", 1e12],
-  ["G", 1e9],
-  ["M", 1e6],
-  ["k", 1e3],
-  ["", 1],
-  ["m", 1e-3],
-  ["µ", 1e-6],
-  ["u", 1e-6],
-  ["n", 1e-9],
-  ["p", 1e-12],
-])
+import { getSiPrefixMultiplier, SI_PREFIXES } from "./get-si-prefix-multiplier"
+
+const SI_PREFIX_PATTERN = SI_PREFIXES
+  .filter((prefix) => prefix !== "")
+  .sort((a, b) => b.length - a.length)
+  .map((prefix) => prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+  .join("|")
+
+const SI_UNIT_PATTERN = new RegExp(
+  `^([+-]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)(?:[eE][+-]?\\d+)?)(?:(${SI_PREFIX_PATTERN}))?$`,
+)
 
 export function parseSiUnit(value?: string | null): number | undefined {
   if (value == null) return undefined
@@ -17,13 +16,11 @@ export function parseSiUnit(value?: string | null): number | undefined {
   const trimmed = value.trim()
   if (trimmed === "") return undefined
 
-  const match = trimmed.match(
-    /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)([TGMkmµunp]?)$/,
-  )
+  const match = trimmed.match(SI_UNIT_PATTERN)
   if (!match) return Number.NaN
 
   const numericValue = Number(match[1])
-  const prefixValue = SI_PREFIX_VALUES.get(match[2])
+  const prefixValue = getSiPrefixMultiplier(match[2] ?? "")
 
   if (prefixValue == null) return Number.NaN
 

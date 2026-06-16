@@ -13,7 +13,11 @@ bun add format-si-unit
 ## Usage
 
 ```typescript
-import { formatSiUnit, parseSiUnit } from "format-si-unit"
+import {
+  formatSiUnit,
+  getSiPrefixMultiplier,
+  parseSiUnit,
+} from "format-si-unit"
 
 console.log(formatSiUnit(1500)) // "1.5k"
 console.log(formatSiUnit(1_000_000)) // "1M"
@@ -26,6 +30,10 @@ console.log(parseSiUnit("100µ")) // 0.0001
 console.log(parseSiUnit("100u")) // 0.0001
 console.log(parseSiUnit("abc")) // NaN
 console.log(parseSiUnit()) // undefined
+
+console.log(getSiPrefixMultiplier("m")) // 0.001
+console.log(getSiPrefixMultiplier("M")) // 1000000
+console.log(getSiPrefixMultiplier("K")) // 1000
 ```
 
 ## Features
@@ -35,6 +43,7 @@ console.log(parseSiUnit()) // undefined
 - Returns numbers with up to 3 significant digits
 - Automatically selects the most appropriate SI prefix
 - Parses SI-prefixed strings back to numbers
+- Parses SI prefixes separately for callers that need to handle their own units
 - TypeScript support included
 
 ## Development

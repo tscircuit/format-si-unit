@@ -1,5 +1,5 @@
 import { expect, test, describe } from "bun:test";
-import { formatSiUnit, parseSiUnit } from "../index";
+import { formatSiUnit, getSiPrefixMultiplier, parseSiUnit } from "../index";
 
 describe("formatSiUnit", () => {
   test("handles basic cases", () => {
@@ -30,6 +30,7 @@ describe("formatSiUnit", () => {
 describe("parseSiUnit", () => {
   test("handles basic cases", () => {
     expect(parseSiUnit("1k")).toBe(1000);
+    expect(parseSiUnit("1K")).toBe(1000);
     expect(parseSiUnit("1.5k")).toBe(1500);
     expect(parseSiUnit("1M")).toBe(1_000_000);
   });
@@ -40,6 +41,7 @@ describe("parseSiUnit", () => {
     expect(parseSiUnit("1u")).toBe(0.000001);
     expect(parseSiUnit("100µ")).toBeCloseTo(0.0001);
     expect(parseSiUnit("1n")).toBe(0.000000001);
+    expect(parseSiUnit("1f")).toBe(0.000000000000001);
   });
 
   test("handles signed and decimal inputs", () => {
@@ -60,5 +62,35 @@ describe("parseSiUnit", () => {
     expect(parseSiUnit("abc")).toBeNaN();
     expect(parseSiUnit("1kk")).toBeNaN();
     expect(parseSiUnit("1 k")).toBeNaN();
+    expect(parseSiUnit("10mA")).toBeNaN();
+  });
+});
+
+describe("getSiPrefixMultiplier", () => {
+  test("handles common SI prefixes", () => {
+    expect(getSiPrefixMultiplier("f")).toBe(1e-15);
+    expect(getSiPrefixMultiplier("p")).toBe(1e-12);
+    expect(getSiPrefixMultiplier("n")).toBe(1e-9);
+    expect(getSiPrefixMultiplier("u")).toBe(1e-6);
+    expect(getSiPrefixMultiplier("µ")).toBe(1e-6);
+    expect(getSiPrefixMultiplier("m")).toBe(1e-3);
+    expect(getSiPrefixMultiplier("k")).toBe(1e3);
+    expect(getSiPrefixMultiplier("K")).toBe(1e3);
+    expect(getSiPrefixMultiplier("M")).toBe(1e6);
+    expect(getSiPrefixMultiplier("G")).toBe(1e9);
+    expect(getSiPrefixMultiplier("T")).toBe(1e12);
+  });
+
+  test("keeps prefixes case-sensitive", () => {
+    expect(getSiPrefixMultiplier("m")).toBe(1e-3);
+    expect(getSiPrefixMultiplier("M")).toBe(1e6);
+  });
+
+  test("returns undefined for unknown prefixes", () => {
+    expect(getSiPrefixMultiplier("")).toBe(1);
+    expect(getSiPrefixMultiplier("x")).toBeUndefined();
+    expect(getSiPrefixMultiplier("MM")).toBeUndefined();
+    expect(getSiPrefixMultiplier("meg")).toBeUndefined();
+    expect(getSiPrefixMultiplier("milli")).toBeUndefined();
   });
 });
