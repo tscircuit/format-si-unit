@@ -40,4 +40,6 @@ export function formatSiUnit(value?: number | null): string {
 }
 
 export { getSiPrefixMultiplier } from "./get-si-prefix-multiplier"
+export { parseAndConvertSiUnit } from "./parse-and-convert-si-unit"
+export type { BaseTscircuitUnit } from "./parse-and-convert-si-unit"
 export { parseSiUnit } from "./parse-si-unit"
