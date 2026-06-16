@@ -10,6 +10,8 @@ const SI_PREFIXES = [
   { value: 1e-12, symbol: "p" },
 ]
 
+const FALLBACK_PREFIX = SI_PREFIXES[SI_PREFIXES.length - 1]!
+
 export function formatSiUnit(value?: number | null): string {
   if (value == null) return ""
   if (value === 0) return "0"
@@ -20,7 +22,7 @@ export function formatSiUnit(value?: number | null): string {
     SI_PREFIXES.find((p) => {
       const scaled = absValue / p.value
       return scaled >= 1 && scaled < 1000
-    }) || SI_PREFIXES[SI_PREFIXES.length - 1]
+    }) ?? FALLBACK_PREFIX
 
   const scaled = value / prefix.value
 
