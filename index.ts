@@ -10,28 +10,54 @@ const SI_PREFIXES = [
   { value: 1e-12, symbol: "p" },
 ]
 
+const SI_PREFIX_VALUES = new Map(
+  SI_PREFIXES.map((prefix) => [prefix.symbol, prefix.value]),
+)
+
+SI_PREFIX_VALUES.set("u", 1e-6)
+
 export function formatSiUnit(value?: number | null): string {
   if (value == null) return ""
   if (value === 0) return "0"
 
   const absValue = Math.abs(value)
-  
-  const prefix = SI_PREFIXES.find((p) => {
-    const scaled = absValue / p.value
-    return scaled >= 1 && scaled < 1000
-  }) || SI_PREFIXES[SI_PREFIXES.length - 1]
+
+  const prefix =
+    SI_PREFIXES.find((p) => {
+      const scaled = absValue / p.value
+      return scaled >= 1 && scaled < 1000
+    }) || SI_PREFIXES[SI_PREFIXES.length - 1]
 
   const scaled = value / prefix.value
 
   let formatted = scaled.toPrecision(3)
-  
+
   // Only remove trailing zeros if there's a non-zero digit after the decimal
-  if (formatted.includes('.') && !/\.0+$/.test(formatted)) {
-    formatted = formatted.replace(/0+$/, '')
+  if (formatted.includes(".") && !/\.0+$/.test(formatted)) {
+    formatted = formatted.replace(/0+$/, "")
   }
-  
+
   // Remove any pure ".0" or ".00" suffixes
-  formatted = formatted.replace(/\.0+$/, '')
+  formatted = formatted.replace(/\.0+$/, "")
 
   return `${formatted}${prefix.symbol}`
+}
+
+export function parseSiUnit(value?: string | null): number | undefined {
+  if (value == null) return undefined
+
+  const trimmed = value.trim()
+  if (trimmed === "") return undefined
+
+  const match = trimmed.match(
+    /^([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)([TGMkmµunp]?)$/,
+  )
+  if (!match) return Number.NaN
+
+  const numericValue = Number(match[1])
+  const prefixValue = SI_PREFIX_VALUES.get(match[2])
+
+  if (prefixValue == null) return Number.NaN
+
+  return numericValue * prefixValue
 }
