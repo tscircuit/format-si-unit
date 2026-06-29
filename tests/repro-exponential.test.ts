@@ -1,21 +1,19 @@
 import { expect, test } from "bun:test"
 import { formatSiUnit } from "../index"
 
-// Reproduces the exponential-notation bug near SI band boundaries (#9).
+// Covers the exponential-notation bug near SI band boundaries (#9).
 //
-// This test FAILS on main: the SI prefix is chosen from the raw value
-// before the existing 3-sig-fig rounding runs, so a value just under a
-// band's top (>= 999.5 * prefix) gets rounded up to 1000 by
-// `toPrecision(3)` -- which JS serializes as "1.00e+3" -- and nothing
-// rolls over to the next-larger prefix.
+// Before the fix, the prefix was picked before the existing 3-sig-fig
+// rounding ran, so a value just under a band's top (>= 999.5 * prefix)
+// rounded up to 1000 -- which JS prints as "1.00e+3" -- with no rollover
+// to the next prefix:
 //
-//   formatSiUnit(999.5)  -> "1.00e+3"   (expected "1k")
-//   formatSiUnit(999999) -> "1.00e+3k"  (expected "1M")
+//   formatSiUnit(999.5)  -> "1.00e+3"   (now "1k")
+//   formatSiUnit(999999) -> "1.00e+3k"  (now "1M")
 //
-// The rounding itself is intended/pre-existing behavior (see the
-// "handles numbers needing rounding" test, e.g. 1234 -> "1.23k"); the
-// bug is the missing prefix rollover, not the rounding. Fix: #10.
-test.failing("formatSiUnit rolls over instead of emitting exponential notation", () => {
+// The rounding itself is intended (see "handles numbers needing rounding",
+// e.g. 1234 -> "1.23k"); the bug was the missing rollover, not the rounding.
+test("formatSiUnit rolls over instead of emitting exponential notation", () => {
   expect(formatSiUnit(999.5)).toBe("1k")
   expect(formatSiUnit(999999)).toBe("1M")
   expect(formatSiUnit(-999.6)).toBe("-1k")

@@ -30,20 +30,6 @@ describe("formatSiUnit", () => {
     expect(formatSiUnit(1234)).toBe("1.23k")
     expect(formatSiUnit(9999999)).toBe("10M")
   })
-
-  test("rolls over to the next prefix when rounding hits 1000", () => {
-    // 999.5 rounds up to 1000 at 3 sig figs; it must roll over to "1k"
-    // instead of emitting exponential notation like "1.00e+3".
-    expect(formatSiUnit(999.5)).toBe("1k")
-    expect(formatSiUnit(999999)).toBe("1M")
-    expect(formatSiUnit(-999.6)).toBe("-1k")
-    // Values just below the rounding boundary stay in their band.
-    expect(formatSiUnit(999.4)).toBe("999")
-    // No formatted value should ever leak exponential notation.
-    for (const v of [999.5, 999999, 0.0009995, -999.6, 9.995e8, 999.95e6]) {
-      expect(formatSiUnit(v)).not.toContain("e")
-    }
-  })
 })
 
 describe("parseSiUnit", () => {
