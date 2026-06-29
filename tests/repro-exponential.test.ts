@@ -15,7 +15,7 @@ import { formatSiUnit } from "../index"
 // The rounding itself is intended/pre-existing behavior (see the
 // "handles numbers needing rounding" test, e.g. 1234 -> "1.23k"); the
 // bug is the missing prefix rollover, not the rounding. Fix: #10.
-test("formatSiUnit rolls over instead of emitting exponential notation", () => {
+test.failing("formatSiUnit rolls over instead of emitting exponential notation", () => {
   expect(formatSiUnit(999.5)).toBe("1k")
   expect(formatSiUnit(999999)).toBe("1M")
   expect(formatSiUnit(-999.6)).toBe("-1k")
