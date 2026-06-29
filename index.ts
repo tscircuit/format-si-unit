@@ -18,13 +18,25 @@ export function formatSiUnit(value?: number | null): string {
 
   const absValue = Math.abs(value)
 
-  const prefix =
-    SI_PREFIXES.find((p) => {
-      const scaled = absValue / p.value
-      return scaled >= 1 && scaled < 1000
-    }) ?? FALLBACK_PREFIX
+  let prefixIndex = SI_PREFIXES.findIndex((p) => {
+    const scaled = absValue / p.value
+    return scaled >= 1 && scaled < 1000
+  })
+  if (prefixIndex === -1) {
+    prefixIndex = SI_PREFIXES.indexOf(FALLBACK_PREFIX)
+  }
 
-  const scaled = value / prefix.value
+  let prefix = SI_PREFIXES[prefixIndex]!
+  let scaled = value / prefix.value
+
+  // toPrecision(3) can round the magnitude up to 1000 (e.g. 999.5 -> "1.00e+3"),
+  // which both loses the "1k" form and emits exponential notation. When that
+  // happens, roll over to the next-larger prefix so 999.5 -> "1k", 999999 -> "1M".
+  while (prefixIndex > 0 && Math.abs(Number(scaled.toPrecision(3))) >= 1000) {
+    prefixIndex -= 1
+    prefix = SI_PREFIXES[prefixIndex]!
+    scaled = value / prefix.value
+  }
 
   let formatted = scaled.toPrecision(3)
 
