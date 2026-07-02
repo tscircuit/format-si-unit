@@ -101,7 +101,7 @@ describe("getSiPrefixMultiplier", () => {
 })
 
 describe("parseAndConvertSiUnit", () => {
-  test.failing("passes through nullish and unitless values", () => {
+  test("passes through nullish and unitless values", () => {
     expect(parseAndConvertSiUnit(undefined)).toEqual({
       parsedUnit: null,
       unitOfValue: null,
