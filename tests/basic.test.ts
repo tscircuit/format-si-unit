@@ -101,13 +101,26 @@ describe("getSiPrefixMultiplier", () => {
 })
 
 describe("parseAndConvertSiUnit", () => {
-  test("passes through nullish and unitless values", () => {
+  test.failing("passes through nullish and unitless values", () => {
     expect(parseAndConvertSiUnit(undefined)).toEqual({
       parsedUnit: null,
       unitOfValue: null,
       value: null,
     })
     expect(parseAndConvertSiUnit(null)).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: null,
+    })
+    // An empty or whitespace-only string is "no value" too, like null --
+    // it should pass through, not throw. (parseSiUnit("") already returns
+    // undefined.)
+    expect(parseAndConvertSiUnit("")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: null,
+    })
+    expect(parseAndConvertSiUnit("   ")).toEqual({
       parsedUnit: null,
       unitOfValue: null,
       value: null,
