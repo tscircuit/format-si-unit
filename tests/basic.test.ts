@@ -112,6 +112,19 @@ describe("parseAndConvertSiUnit", () => {
       unitOfValue: null,
       value: null,
     })
+    // An empty or whitespace-only string is "no value" too, like null --
+    // it should pass through, not throw. (parseSiUnit("") already returns
+    // undefined.)
+    expect(parseAndConvertSiUnit("")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: null,
+    })
+    expect(parseAndConvertSiUnit("   ")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: null,
+    })
     expect(parseAndConvertSiUnit(4.7)).toEqual({
       parsedUnit: null,
       unitOfValue: null,

@@ -235,7 +235,11 @@ export function parseAndConvertSiUnit(
   unitOfValue: BaseTscircuitUnit | null
   value: null | number | { x: number; y: number }
 } {
-  if (v === undefined || v === null)
+  if (
+    v === undefined ||
+    v === null ||
+    (typeof v === "string" && v.trim() === "")
+  )
     return { parsedUnit: null, unitOfValue: null, value: null }
   if (typeof v === "string" && v.match(/^-?[\d.]+$/))
     return {
