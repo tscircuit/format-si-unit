@@ -43,6 +43,7 @@ describe("parseSiUnit", () => {
   test("handles small numbers", () => {
     expect(parseSiUnit("1m")).toBe(0.001)
     expect(parseSiUnit("1µ")).toBe(0.000001)
+    expect(parseSiUnit("1μ")).toBe(0.000001) // U+03BC Greek mu
     expect(parseSiUnit("1u")).toBe(0.000001)
     expect(parseSiUnit("100µ")).toBeCloseTo(0.0001)
     expect(parseSiUnit("1n")).toBe(0.000000001)
@@ -134,6 +135,11 @@ describe("parseAndConvertSiUnit", () => {
       parsedUnit: "uF",
       unitOfValue: "F",
       value: 0.0000022,
+    })
+    expect(parseAndConvertSiUnit("1μF")).toEqual({
+      parsedUnit: "μF",
+      unitOfValue: "F",
+      value: 0.000001,
     })
     expect(parseAndConvertSiUnit("90deg")).toEqual({
       parsedUnit: "deg",
