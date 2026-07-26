@@ -7,6 +7,7 @@ const SI_PREFIX_VALUES = new Map<string, number>([
   ["", 1],
   ["m", 1e-3],
   ["µ", 1e-6],
+  ["μ", 1e-6],
   ["u", 1e-6],
   ["n", 1e-9],
   ["p", 1e-12],
