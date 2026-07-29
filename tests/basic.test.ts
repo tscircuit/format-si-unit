@@ -15,8 +15,8 @@ describe("formatSiUnit", () => {
 
   test("handles small numbers", () => {
     expect(formatSiUnit(0.001)).toBe("1m")
-    expect(formatSiUnit(0.000001)).toBe("1μ")
-    expect(formatSiUnit(0.0001)).toBe("100μ")
+    expect(formatSiUnit(0.000001)).toBe("1u")
+    expect(formatSiUnit(0.0001)).toBe("100u")
     expect(formatSiUnit(0.000000001)).toBe("1n")
   })
 
