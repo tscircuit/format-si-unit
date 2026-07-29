@@ -5,7 +5,7 @@ const SI_PREFIXES = [
   { value: 1e3, symbol: "k" },
   { value: 1, symbol: "" },
   { value: 1e-3, symbol: "m" },
-  { value: 1e-6, symbol: "µ" },
+  { value: 1e-6, symbol: "μ" },
   { value: 1e-9, symbol: "n" },
   { value: 1e-12, symbol: "p" },
 ]
