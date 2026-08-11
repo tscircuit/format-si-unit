@@ -51,6 +51,7 @@ export function formatSiUnit(value?: number | null): string {
   return `${formatted}${prefix.symbol}`
 }
 
+export { formatMm } from "./format-mm"
 export { getSiPrefixMultiplier } from "./get-si-prefix-multiplier"
 export { parseAndConvertSiUnit } from "./parse-and-convert-si-unit"
 export type { BaseTscircuitUnit } from "./parse-and-convert-si-unit"
