@@ -125,6 +125,24 @@ describe("parseAndConvertSiUnit", () => {
     })
   })
 
+  test("parses scientific-notation number strings", () => {
+    expect(parseAndConvertSiUnit("1e3")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 1000,
+    })
+    expect(parseAndConvertSiUnit("4.7e-6")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 0.0000047,
+    })
+    expect(parseAndConvertSiUnit("-2e2")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: -200,
+    })
+  })
+
   test("converts known tscircuit units to base units", () => {
     expect(parseAndConvertSiUnit("10kΩ")).toEqual({
       parsedUnit: "kΩ",
