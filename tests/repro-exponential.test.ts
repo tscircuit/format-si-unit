@@ -22,3 +22,15 @@ test("formatSiUnit rolls over instead of emitting exponential notation", () => {
     expect(formatSiUnit(v)).not.toContain("e")
   }
 })
+
+test("formatSiUnit does not emit exponential notation at the Tera band", () => {
+  // At the top prefix there is no larger band to roll into, so rounding to
+  // 1000 previously left toPrecision(3) emitting "1.00e+3T" instead of "1000T".
+  expect(formatSiUnit(1e15)).toBe("1000T")
+  expect(formatSiUnit(9.995e14)).toBe("1000T")
+  for (const v of [1e15, 9.995e14, -1e15]) {
+    const out = formatSiUnit(v)
+    expect(out).not.toContain("e")
+    expect(out).not.toContain("E")
+  }
+})

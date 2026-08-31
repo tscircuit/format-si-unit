@@ -40,6 +40,13 @@ export function formatSiUnit(value?: number | null): string {
 
   let formatted = scaled.toPrecision(3)
 
+  // At the top prefix there is no larger band to roll into, so 3-sig-fig
+  // rounding to 1000 leaves toPrecision(3) emitting exponential notation
+  // like "1.00e+3T". Normalize any residual exponential form to plain digits.
+  if (formatted.includes("e")) {
+    formatted = Number(formatted).toString()
+  }
+
   // Only remove trailing zeros if there's a non-zero digit after the decimal
   if (formatted.includes(".") && !/\.0+$/.test(formatted)) {
     formatted = formatted.replace(/0+$/, "")
