@@ -125,6 +125,27 @@ describe("parseAndConvertSiUnit", () => {
     })
   })
 
+  test.failing("parses scientific-notation number strings", () => {
+    // The numeric-string guard doesn't allow the exponent, so "1e3" falls into
+    // the unit parser, which treats "e" as a unit and drops the exponent --
+    // returning 1 instead of 1000. parseSiUnit already handles sci-notation.
+    expect(parseAndConvertSiUnit("1e3")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 1000,
+    })
+    expect(parseAndConvertSiUnit("4.7e-6")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 0.0000047,
+    })
+    expect(parseAndConvertSiUnit("-2e2")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: -200,
+    })
+  })
+
   test("converts known tscircuit units to base units", () => {
     expect(parseAndConvertSiUnit("10kΩ")).toEqual({
       parsedUnit: "kΩ",
