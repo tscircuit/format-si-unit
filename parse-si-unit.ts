@@ -1,7 +1,7 @@
-import { getSiPrefixMultiplier, SI_PREFIXES } from "./get-si-prefix-multiplier"
+import { SI_PREFIXES, getSiPrefixMultiplier } from "./get-si-prefix-multiplier"
+import { parseEmbeddedDecimalSiUnit } from "./parse-embedded-decimal-si-unit"
 
-const SI_PREFIX_PATTERN = SI_PREFIXES
-  .filter((prefix) => prefix !== "")
+const SI_PREFIX_PATTERN = SI_PREFIXES.filter((prefix) => prefix !== "")
   .sort((a, b) => b.length - a.length)
   .map((prefix) => prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
   .join("|")
@@ -16,7 +16,10 @@ export function parseSiUnit(value?: string | null): number | undefined {
   const trimmed = value.trim()
   if (trimmed === "") return undefined
 
-  const match = trimmed.match(SI_UNIT_PATTERN)
+  const normalized = parseEmbeddedDecimalSiUnit(trimmed)
+  const match = (normalized?.replace(/Ω$/u, "") ?? trimmed).match(
+    SI_UNIT_PATTERN,
+  )
   if (!match) return Number.NaN
 
   const numericValue = Number(match[1])
