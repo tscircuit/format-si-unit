@@ -56,6 +56,15 @@ describe("parseSiUnit", () => {
     expect(parseSiUnit("1e3m")).toBe(1)
   })
 
+  test("parses embedded decimal prefixes and resistor notation", () => {
+    expect(parseSiUnit("2u2")).toBeCloseTo(2.2e-6)
+    expect(parseSiUnit("4n7")).toBeCloseTo(4.7e-9)
+    expect(parseSiUnit("1K2")).toBe(1200)
+    expect(parseSiUnit("4R7")).toBe(4.7)
+    expect(parseSiUnit("0R22")).toBe(0.22)
+    expect(parseSiUnit("4R7H")).toBeNaN()
+  })
+
   test("handles edge cases", () => {
     expect(parseSiUnit("0")).toBe(0)
     expect(parseSiUnit()).toBeUndefined()
@@ -102,6 +111,19 @@ describe("getSiPrefixMultiplier", () => {
 })
 
 describe("parseAndConvertSiUnit", () => {
+  test("converts embedded decimal component values", () => {
+    expect(parseAndConvertSiUnit("2u2", "H")).toEqual({
+      parsedUnit: null,
+      unitOfValue: "H",
+      value: 2.2e-6,
+    })
+    expect(parseAndConvertSiUnit("2u2H").value).toBeCloseTo(2.2e-6)
+    expect(parseAndConvertSiUnit("4n7", "F").value).toBeCloseTo(4.7e-9)
+    expect(parseAndConvertSiUnit("1K2", "Ω").value).toBe(1200)
+    expect(parseAndConvertSiUnit("4R7", "Ω").value).toBe(4.7)
+    expect(parseAndConvertSiUnit("0R22", "Ω").value).toBe(0.22)
+  })
+
   test("passes through nullish and unitless values", () => {
     expect(parseAndConvertSiUnit(undefined)).toEqual({
       parsedUnit: null,

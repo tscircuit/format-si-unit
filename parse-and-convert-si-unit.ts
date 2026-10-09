@@ -1,4 +1,5 @@
 import { getSiPrefixMultiplier } from "./get-si-prefix-multiplier"
+import { parseEmbeddedDecimalSiUnit } from "./parse-embedded-decimal-si-unit"
 
 export type BaseTscircuitUnit =
   | "ms"
@@ -265,6 +266,11 @@ export function parseAndConvertSiUnit(
         y: yResult.value,
       },
     }
+  }
+  if (typeof v === "string") {
+    const normalized = parseEmbeddedDecimalSiUnit(v.trim())
+    if (normalized !== undefined)
+      return parseAndConvertSiUnit(normalized, unitOfValue)
   }
   const reversedInputString = v.toString().split("").reverse().join("")
   const unitReversed = reversedInputString.match(/[^\d\s]+/)?.[0]

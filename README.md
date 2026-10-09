@@ -16,6 +16,7 @@ bun add format-si-unit
 import {
   formatSiUnit,
   getSiPrefixMultiplier,
+  parseAndConvertSiUnit,
   parseSiUnit,
 } from "format-si-unit"
 
@@ -28,6 +29,8 @@ console.log(formatSiUnit()) // ""
 console.log(parseSiUnit("1.5k")) // 1500
 console.log(parseSiUnit("100µ")) // 0.0001
 console.log(parseSiUnit("100u")) // 0.0001
+console.log(parseSiUnit("4R7")) // 4.7
+console.log(parseAndConvertSiUnit("2u2", "H").value) // 0.0000022
 console.log(parseSiUnit("abc")) // NaN
 console.log(parseSiUnit()) // undefined
 
@@ -43,6 +46,7 @@ console.log(getSiPrefixMultiplier("K")) // 1000
 - Returns numbers with up to 3 significant digits
 - Automatically selects the most appropriate SI prefix
 - Parses SI-prefixed strings back to numbers
+- Parses embedded-decimal component values such as `2u2`, `4n7`, and `4R7`
 - Parses SI prefixes separately for callers that need to handle their own units
 - TypeScript support included
 
