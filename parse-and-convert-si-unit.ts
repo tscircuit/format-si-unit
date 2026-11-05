@@ -132,6 +132,7 @@ const unitMappings: Record<
   deg: {
     baseUnit: "deg",
     variants: {
+      deg: 1,
       rad: 180 / Math.PI,
     },
   },
