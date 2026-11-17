@@ -1,3 +1,4 @@
+import { getRequestedUnitConversionFactor } from "./get-requested-unit-conversion"
 import { getSiPrefixMultiplier } from "./get-si-prefix-multiplier"
 
 export type BaseTscircuitUnit =
@@ -179,7 +180,7 @@ for (const [baseUnit, info] of Object.entries(unitMappings)) {
   }
 }
 
-function getBaseTscircuitUnit(unit: string): UnitInfo {
+function findBaseTscircuitUnit(unit: string): UnitInfo | null {
   for (const info of Object.values(unitMappings)) {
     if (unit in info.variants) {
       return {
@@ -202,10 +203,16 @@ function getBaseTscircuitUnit(unit: string): UnitInfo {
       }
     }
   }
-  return {
-    baseUnit: unit as BaseTscircuitUnit,
-    conversionFactor: 1,
-  }
+  return null
+}
+
+function getBaseTscircuitUnit(unit: string): UnitInfo {
+  return (
+    findBaseTscircuitUnit(unit) ?? {
+      baseUnit: unit as BaseTscircuitUnit,
+      conversionFactor: 1,
+    }
+  )
 }
 
 export function parseAndConvertSiUnit(
@@ -291,6 +298,20 @@ export function parseAndConvertSiUnit(
       parsedUnit: null,
       unitOfValue: null,
       value: Number.parseFloat(numberPart) * bareSiPrefixMultiplier,
+    }
+  }
+
+  if (unitOfValue && !findBaseTscircuitUnit(unit)) {
+    const requestedConversionFactor = getRequestedUnitConversionFactor({
+      unit,
+      requestedUnit: unitOfValue,
+    })
+    if (requestedConversionFactor !== undefined) {
+      return {
+        parsedUnit: unit,
+        unitOfValue,
+        value: requestedConversionFactor * Number.parseFloat(numberPart),
+      }
     }
   }
 
