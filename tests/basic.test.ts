@@ -192,4 +192,33 @@ describe("parseAndConvertSiUnit", () => {
       value: { x: 25.4, y: 25.4 },
     })
   })
+
+  test("parses RKM notation without dropping trailing digits", () => {
+    // RKM (IEC 60062) uses the SI prefix letter as a decimal separator.
+    // Before the fix these were silently truncated: "4k7" -> 4000 instead of
+    // 4700, "2u2" -> 0.000002 instead of 0.0000022, "1R5" -> 1 instead of 1.5.
+    // See tscircuit/core#5806.
+    expect(parseAndConvertSiUnit("4k7", "Ω")).toEqual({
+      parsedUnit: null,
+      unitOfValue: "Ω",
+      value: 4700,
+    })
+    expect(parseAndConvertSiUnit("2u2", "F")).toEqual({
+      parsedUnit: null,
+      unitOfValue: "F",
+      value: 0.0000022,
+    })
+    expect(parseAndConvertSiUnit("1R5", "Ω")).toEqual({
+      parsedUnit: null,
+      unitOfValue: "Ω",
+      value: 1.5,
+    })
+    expect(parseAndConvertSiUnit("1K5", "Ω").value).toBe(1500)
+    expect(parseAndConvertSiUnit("3m3", "H").value).toBeCloseTo(0.0033)
+    // "R" alone is a whole-ohm value with no fractional part.
+    expect(parseAndConvertSiUnit("1R", "Ω").value).toBe(1)
+    // Plain decimal + prefix forms must keep working unchanged.
+    expect(parseAndConvertSiUnit("4.7k", "Ω").value).toBe(4700)
+    expect(parseAndConvertSiUnit("10k", "Ω").value).toBe(10_000)
+  })
 })

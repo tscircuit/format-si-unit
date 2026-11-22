@@ -208,6 +208,44 @@ function getBaseTscircuitUnit(unit: string): UnitInfo {
   }
 }
 
+/**
+ * Multiplier for the single-letter SI/RKM prefix used in RKM notation.
+ * Unlike {@link getSiPrefixMultiplier}, this also maps "R"/"r" to 1 (ohms),
+ * which is the whole point of RKM: the prefix letter doubles as the decimal
+ * point and, for resistance, "R" stands for ohms. Case is significant for
+ * "m" (milli) vs "M" (mega), matching SI conventions.
+ */
+function getRkmPrefixMultiplier(letter: string): number {
+  switch (letter) {
+    case "R":
+    case "r":
+      return 1
+    case "k":
+    case "K":
+      return 1e3
+    case "meg":
+    case "M":
+      return 1e6
+    case "G":
+      return 1e9
+    case "T":
+      return 1e12
+    case "m":
+      return 1e-3
+    case "u":
+    case "U":
+      return 1e-6
+    case "n":
+    case "N":
+      return 1e-9
+    case "p":
+    case "P":
+      return 1e-12
+    default:
+      return 1
+  }
+}
+
 export function parseAndConvertSiUnit(
   v: {
     x: string | number
@@ -266,6 +304,30 @@ export function parseAndConvertSiUnit(
       },
     }
   }
+
+  // RKM notation (IEC 60062): the SI prefix letter is used as a decimal
+  // separator so "4k7" means 4.7 kΩ, "2u2" means 2.2 µ, "1R5" means 1.5 Ω,
+  // and "1meg" means 1 MΩ. Without this, the trailing digits were silently
+  // dropped (e.g. "4k7" parsed as 4 kΩ = 4000 instead of 4700), corrupting
+  // BOM values. See tscircuit/core#5806.
+  const rkmMatch = v.match(
+    /^([+-]?\d+)[ \t]*(meg|[kKMmUuNnPpRrGgTt])(?=[ \t]*\d)/,
+  )
+  if (rkmMatch) {
+    const wholePart = rkmMatch[1]!
+    const prefixToken = rkmMatch[2]!
+    const rest = v.slice(rkmMatch[0].length - prefixToken.length)
+    const fractionalDigits = rest.replace(/[^0-9.]/g, "")
+    const numericValue =
+      Number.parseFloat(`${wholePart}.${fractionalDigits}`) *
+      getRkmPrefixMultiplier(prefixToken)
+    return {
+      parsedUnit: null,
+      unitOfValue: unitOfValue ?? null,
+      value: numericValue,
+    }
+  }
+
   const reversedInputString = v.toString().split("").reverse().join("")
   const unitReversed = reversedInputString.match(/[^\d\s]+/)?.[0]
   if (!unitReversed) {
