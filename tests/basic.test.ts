@@ -193,3 +193,28 @@ describe("parseAndConvertSiUnit", () => {
     })
   })
 })
+
+describe("parseAndConvertSiUnit scientific notation", () => {
+  test("parses scientific notation without treating e as a unit", () => {
+    expect(parseAndConvertSiUnit("1e3")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 1000,
+    })
+    expect(parseAndConvertSiUnit("1.5e-3")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 0.0015,
+    })
+    expect(parseAndConvertSiUnit("-2e2")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: -200,
+    })
+    expect(parseAndConvertSiUnit("1E3")).toEqual({
+      parsedUnit: null,
+      unitOfValue: null,
+      value: 1000,
+    })
+  })
+})
